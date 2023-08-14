@@ -19,7 +19,13 @@ def curvature(path):
     dy_dt = np.gradient(path[:, 1])
     d2x_dt2 = np.gradient(dx_dt)
     d2y_dt2 = np.gradient(dy_dt)
-    curvature = np.abs(dx_dt * d2y_dt2 - dy_dt * d2x_dt2) / (dx_dt**2 + dy_dt**2)**(3/2)
+
+    denominator = dx_dt ** 2 + dy_dt ** 2
+    zero_mask = denominator == 0.0
+
+    curvature = np.zeros_like(dx_dt)
+    curvature[~zero_mask] = np.abs(dx_dt[~zero_mask] * d2y_dt2[~zero_mask] - dy_dt[~zero_mask] * d2x_dt2[~zero_mask]) / \
+                            denominator[~zero_mask] ** (3 / 2)
 
     return curvature
 
@@ -43,8 +49,8 @@ def smoothness_penalty(path, threshold):
 
 START_VIOLATION_PENALTY = 1
 GOAL_VIOLATION_PENALTY = 1
-ENV_VIOLATION_PENALTY = 100
-COLLISION_PENALTY = 100
+ENV_VIOLATION_PENALTY = 10000
+COLLISION_PENALTY = 10000
 ACKERMANN_CONSTRAINT_PENALTY = 5  # Penalty for violating the Ackermann steering constraint
 THRESHOLD = 5
 
@@ -73,11 +79,11 @@ def PathPlanningCost(sol: SplinePath):
 
     # Environment violation
     if details['environment_violation']:
-        cost *= 1 + details['environment_violation_count']*ENV_VIOLATION_PENALTY
+        cost *= 1 + details['environment_violation_count']*ENV_VIOLATION_PENALTY + ENV_VIOLATION_PENALTY
 
     # Collision violation
     if details['collision_violation']:
-        cost *= 1 + details['collision_violation_count']*COLLISION_PENALTY
+        cost *= 1 + details['collision_violation_count']*COLLISION_PENALTY + COLLISION_PENALTY
 
 
     # Check Ackermann steering constraint violation

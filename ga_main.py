@@ -4,7 +4,7 @@ from ga import genetic_algorithm
 
 plt.rcParams["figure.autolayout"] = True
 #-----------------------------------------------------------------------------------------------------------------------
-# # Create environment
+# Create environment
 # env_params = {
 #     'width': 100,
 #     'height': 100,
@@ -21,6 +21,8 @@ plt.rcParams["figure.autolayout"] = True
 # ]
 #-----------------------------------------------------------------------------------------------------------------------
 # Create environment
+
+
 env_params = {
     'width': 100,
     'height': 100,
@@ -77,9 +79,27 @@ def callback(data):
 ga_params = {
     'max_iter': 100,
     'pop_size': 100,
-    'mutation_rate': 0.01,
+    'mutation_rate': 0.05,
     'crossover_rate': 0.8
 }
+
+
+import time
+
+# 开始计时
+start_time = time.time()
+
+# 执行你的代码
 bestsol, pop = genetic_algorithm(problem, callback=callback, **ga_params)
+# 结束计时
+end_time = time.time()
+
+# 计算代码执行时间
+execution_time = end_time - start_time
+
+# 打印结果
+print("代码执行时间：", execution_time, "秒")
+
+
 
 plt.show()

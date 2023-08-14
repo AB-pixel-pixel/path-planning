@@ -19,7 +19,7 @@ def genetic_algorithm(problem, **kwargs):
 
     max_iter = kwargs.get('max_iter', 100)
     pop_size = kwargs.get('pop_size', 100)
-    mutation_rate = kwargs.get('mutation_rate', 0.01)
+    mutation_rate = kwargs.get('mutation_rate', 0.05)
     crossover_rate = kwargs.get('crossover_rate', 0.8)
     callback = kwargs.get('callback', None)
     _last_cost = 0
