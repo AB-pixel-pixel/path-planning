@@ -1,10 +1,53 @@
 from path_planning.solution import SplinePath
 from path_planning.environment import Environment
+import numpy as np
+
+from scipy.interpolate import CubicSpline
+
+def curvature(path):
+    """
+    计算路径的曲率。
+
+    参数:
+        path (numpy.ndarray): 输入路径。
+
+    返回:
+        numpy.ndarray: 路径的曲率。
+    """
+
+    dx_dt = np.gradient(path[:, 0])
+    dy_dt = np.gradient(path[:, 1])
+    d2x_dt2 = np.gradient(dx_dt)
+    d2y_dt2 = np.gradient(dy_dt)
+    curvature = np.abs(dx_dt * d2y_dt2 - dy_dt * d2x_dt2) / (dx_dt**2 + dy_dt**2)**(3/2)
+
+    return curvature
+
+
+def smoothness_penalty(path, threshold):
+    """
+    计算路径的圆滑度损失。
+
+    参数:
+        path (numpy.ndarray): 输入路径。
+        threshold (float): 圆滑度的阈值。超过该阈值将被认为是不够圆滑。
+
+    返回:
+        float: 圆滑度损失。
+    """
+
+    curvatures = curvature(path)
+    roughness = np.sum(curvatures[curvatures > threshold])
+    return roughness
+
 
 START_VIOLATION_PENALTY = 1
 GOAL_VIOLATION_PENALTY = 1
-ENV_VIOLATION_PENALTY = 0.2
-COLLISION_PENALTY = 1
+ENV_VIOLATION_PENALTY = 100
+COLLISION_PENALTY = 100
+ACKERMANN_CONSTRAINT_PENALTY = 5  # Penalty for violating the Ackermann steering constraint
+THRESHOLD = 5
+
 
 def PathPlanningCost(sol: SplinePath):
 
@@ -36,6 +79,11 @@ def PathPlanningCost(sol: SplinePath):
     if details['collision_violation']:
         cost *= 1 + details['collision_violation_count']*COLLISION_PENALTY
 
+
+    # Check Ackermann steering constraint violation
+    cost  *= 1 + smoothness_penalty(path,THRESHOLD)
+
+
     # Add details
     details['sol'] = sol
     details['path'] = path
@@ -44,7 +92,7 @@ def PathPlanningCost(sol: SplinePath):
     
     return cost, details
 
-def EnvCostFunction(environment: Environment, num_control_points=10, resolution=100):
+def EnvCostFunction(environment: Environment, resolution=100):
     def CostFunction(xy):
         sol = SplinePath.from_list(environment, xy, resolution, normalized=True)
         return PathPlanningCost(sol)
