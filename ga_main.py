@@ -1,24 +1,7 @@
 import path_planning as pp
 import matplotlib.pyplot as plt
 from ga import genetic_algorithm
-
 plt.rcParams["figure.autolayout"] = True
-#-----------------------------------------------------------------------------------------------------------------------
-# Create environment
-# env_params = {
-#     'width': 100,
-#     'height': 100,
-#     'robot_radius': 1,
-#     'start': [5,5],
-#     'goal': [80,5],
-# }
-# env = pp.Environment(**env_params)
-#
-# # Obstacles
-# obstacles = [
-#     {'center': [40, 20], 'radius': 20},
-#     {'center': [40, 60], 'radius': 20},
-# ]
 #-----------------------------------------------------------------------------------------------------------------------
 # Create environment
 

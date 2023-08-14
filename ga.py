@@ -1,6 +1,6 @@
 import numpy as np
 from copy import deepcopy
-
+import matplotlib.pyplot as plt
 def genetic_algorithm(problem, **kwargs):
     """
     遗传算法用于路径规划。
@@ -54,7 +54,8 @@ def genetic_algorithm(problem, **kwargs):
     # 种群历史记录
     pop_history = []
     pop_history.append(deepcopy(population))
-
+    # 记录 best_individual["cost"] 的变化
+    best_cost_history = [best_individual['cost']]  # 初始值
     # 遗传算法循环
     for it in range(max_iter):
         if it > max_iter//2:
@@ -105,6 +106,16 @@ def genetic_algorithm(problem, **kwargs):
             if (_last_cost == length):
                  break
             _last_cost = length
+        # 记录 best_individual["cost"] 的变化
+        best_cost_history.append(best_individual['cost'])
+
+    # 绘制 best_individual["cost"] 随迭代次数的变化曲线
+    plt.plot(range(max_iter + 1), best_cost_history)
+    plt.xlabel('Iteration')
+    plt.ylabel('Best Cost')
+    plt.title('Best Cost Variation')
+    plt.show()
+
     return best_individual, pop_history
 
 

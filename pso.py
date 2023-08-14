@@ -1,6 +1,6 @@
 import numpy as np
 from copy import deepcopy
-
+import matplotlib.pyplot as plt
 # Particle Swarm Optimization
 def PSO(problem, **kwargs):
 
@@ -52,7 +52,8 @@ def PSO(problem, **kwargs):
         
         if pop[i]['best']['cost'] < gbest['cost']:
             gbest = deepcopy(pop[i]['best'])
-        
+    # List to store gbest cost values at each iteration
+    gbest_cost_history = []
     # PSO Loop
     for it in range(0, max_iter):
         do_resetting = resetting and ((it + 1) % resetting == 0)
@@ -92,5 +93,15 @@ def PSO(problem, **kwargs):
                 'gbest': gbest,
                 'pop': pop,
             })
+
+        # Record gbest cost at each iteration
+        gbest_cost_history.append(gbest['cost'])
+
+    # Plot gbest cost history
+    plt.plot(range(max_iter), gbest_cost_history)
+    plt.xlabel('Iteration')
+    plt.ylabel('Best Cost')
+    plt.title('GBest Cost Variation')
+    plt.show()
 
     return gbest, pop
